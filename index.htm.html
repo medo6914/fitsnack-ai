@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>FitSnack AI — الويب</title>
+  <!-- PLACEHOLDER for Google AdSense:
+       After AdSense approval, paste your AdSense script here replacing 'ca-pub-XXXXXXXXXXXX' with your publisher ID.
+       Example (replace the ID):
+       <script data-ad-client="ca-pub-XXXXXXXXXXXX" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  -->
+  <style>
+    :root{--bg:#f6f9ff;--card:#fff;--accent:#2B6EF6;--muted:#6b7280;}
+    body{font-family:Inter, "Segoe UI", Tahoma, Arial; margin:0; background:var(--bg); color:#0b1220;}
+    .container{max-width:1100px;margin:18px auto;padding:18px;display:grid;grid-template-columns:1fr 360px;gap:16px;position:relative;}
+    header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .logo{width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--accent),#7c3aed);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700}
+    h1{margin:0;font-size:18px}
+    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:0 6px 18px rgba(11,18,32,0.04)}
+    .section-title{font-weight:700;margin-bottom:8px}
+    table{width:100%;border-collapse:collapse;}
+    th,td{padding:8px;border-bottom:1px solid #eef2f7;text-align:right;font-size:14px}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{padding:8px 12px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-ghost{background:transparent;border:1px solid #e6e9ef}
+    .small{font-size:13px;color:var(--muted)}
+    aside{display:flex;flex-direction:column;gap:12px}
+    @media(max-width:880px){.container{grid-template-columns:1fr;padding:12px}}
+    .lang{display:flex;gap:6px}
+    .pill{padding:6px 10px;border-radius:999px;border:1px solid #e6e9ef;background:#fff;cursor:pointer}
+    input[type="text"], input[type="number"], select{padding:8px;border-radius:8px;border:1px solid #e6e9ef;width:100%}
+    .flex{display:flex;gap:8px;align-items:center}
+    .muted{color:var(--muted)}
+    .hidden{display:none}
+    footer{grid-column:1/-1;text-align:center;color:var(--muted);font-size:13px;margin-top:6px;padding-bottom:40px}
+    .editable{background:#fbfdff;border-radius:8px;padding:8px}
+    /* watermark */
+    .watermark{position:fixed;right:14px;bottom:10px;opacity:0.9;background:rgba(11,18,32,0.06);padding:6px 10px;border-radius:8px;font-size:12px;backdrop-filter: blur(4px);}
+    /* cookie banner */
+    .cookie{position:fixed;left:12px;bottom:12px;background:#fff;border-radius:10px;padding:12px;box-shadow:0 8px 24px rgba(11,18,32,0.12);max-width:320px;font-size:13px;display:flex;gap:8px;align-items:center}
+    .cookie button{padding:6px 8px;border-radius:8px;border:0;cursor:pointer}
+    .ads-placeholder{border:1px dashed #e6e9ef;border-radius:8px;padding:10px;text-align:center;color:var(--muted);margin:10px 0}
+    a.link{color:var(--accent);text-decoration:none;font-weight:600}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="logo">FS</div>
+        <div>
+          <h1 id="title">FitSnack AI</h1>
+          <div class="small" id="subtitle">جدول أكل صحي + جدول تمارين</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="lang">
+          <div class="pill" id="btnAr">العربية</div>
+          <div class="pill" id="btnEn">EN</div>
+        </div>
+        <div class="small" id="userTag">المبرمج: AHMED MOHAMED</div>
+      </div>
+    </header>
+
+    <!-- Ad slot (example) -->
+    <div style="grid-column:1 / -1" class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="section-title">إعلانات</div>
+        <div class="small muted">مكان مخصص لإعلانات AdSense</div>
+      </div>
+      <div class="ads-placeholder" id="adsTop">
+        <!-- Insert AdSense code here after approval (see comments in head) -->
+        عنصر إعلان: ضع كود AdSense هنا بعد الموافقة.
+      </div>
+    </div>
+
+    <main style="display:flex;flex-direction:column;gap:12px">
+      <section class="card">
+        <div class="section-title" id="mealsTitle">جدول الوجبات الصحية</div>
+        <div class="small muted" id="mealsNote">أضف، عدّل أو احذف أي وجبة — القيم مخزنة محليًا</div>
+        <div style="margin-top:10px" class="editable">
+          <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <input id="mealName" placeholder="اسم الوجبة" />
+            <input id="mealPortion" placeholder="الكمية (مثال: 100 جم)" />
+            <input id="mealCals" type="number" placeholder="سعرات (kcal)" style="width:120px" />
+            <input id="mealProt" type="number" placeholder="بروتين (جم)" style="width:120px" />
+            <button class="btn btn-primary" id="addMealBtn">أضف وجبة</button>
+            <button class="btn btn-ghost" id="exportDataBtn">تصدير JSON</button>
+          </div>
+          <table id="mealsTable">
+            <thead><tr><th>الوجبة</th><th>الكمية</th><th>سعرات</th><th>بروتين</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="section-title" id="exTitle">جدول التمارين اليومي</div>
+        <div class="small muted" id="exNote">أضف تمرين لكل يوم مع المجموعات والتكرارات</div>
+        <div style="margin-top:10px" class="editable">
+          <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap">
+            <select id="exDay" style="width:160px">
+              <option value="monday">الإثنين</option><option value="tuesday">الثلاثاء</option>
+              <option value="wednesday">الأربعاء</option><option value="thursday">الخميس</option>
+              <option value="friday">الجمعة</option><option value="saturday">السبت</option><option value="sunday">الأحد</option>
+            </select>
+            <input id="exName" placeholder="اسم التمرين" />
+            <input id="exSets" type="text" placeholder="مجموعات x تكرارات (مثال: 3x12)" style="width:160px" />
+            <button class="btn btn-primary" id="addExBtn">أضف تمرين</button>
+          </div>
+          <table id="exTable">
+            <thead><tr><th>اليوم</th><th>التمرين</th><th>مجموعات/تكرارات</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card" id="summaryCard">
+        <div class="section-title" id="summaryTitle">ملخص اليوم</div>
+        <div class="small muted" id="summaryNote">حساب مجموع السعرات والبروتين وعدد التمارين المحفوظة</div>
+        <div style="margin-top:8px">
+          <div class="flex">
+            <div class="small">مجموع السعرات: <strong id="sumCals">0</strong> kcal</div>
+            <div class="small">مجموع البروتين: <strong id="sumProt">0</strong> جم</div>
+            <div style="margin-left:auto" class="small">تمارين محفوظة: <strong id="sumEx">0</strong></div>
+          </div>
+          <div style="margin-top:8px" class="actions">
+            <button class="btn btn-ghost" id="loadBtn">تحميل المحفوظ</button>
+            <button class="btn btn-ghost" id="clearBtn">مسح المحفوظ</button>
+            <button class="btn btn-ghost" id="copySummaryBtn">نسخ الملخص</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <aside>
+      <div class="card">
+        <div class="section-title" id="profileTitle">الملف</div>
+        <div class="small muted" id="profileInfo">اسم: — <br>الوزن: — <br>الطول: — <br>الهدف: —</div>
+        <div style="margin-top:8px" class="actions">
+          <button class="btn btn-primary" id="editProfileBtn">تعديل الملف</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">حول</div>
+        <div class="small muted">FitSnack AI — Web Demo<br>المطور / المبرمج: <strong id="devName">AHMED MOHAMED</strong></div>
+        <div style="margin-top:8px" class="small muted">يمكنك مشاركة ملف JSON أو حفظه محليًا.</div>
+      </div>
+
+      <div class="card">
+        <div class="section-title">تواصل</div>
+        <div class="small muted">تواصل معي: <br>
+          <a class="link" href="mailto:medomaree11@gmail.com">medomaree11@gmail.com</a><br>
+          <a class="link" href="https://wa.me/201065569802" target="_blank">WhatsApp: 0106569802</a>
+        </div>
+      </div>
+    </aside>
+
+    <footer>FitSnack AI — Web version — 2025</footer>
+  </div>
+
+  <!-- watermark -->
+  <div class="watermark">© AHMED MOHAMED — FitSnack AI</div>
+
+  <!-- cookie consent (simple) -->
+  <div class="cookie" id="cookieBanner" style="display:none">
+    <div style="flex:1">نستخدم ملفات تعريف الارتباط لتحسين التجربة — للموافقة اضغط موافق.</div>
+    <div>
+      <button id="cookieOk" style="background:var(--accent);color:#fff">موافق</button>
+      <button id="cookieClose" style="background:#eee;margin-left:6px">رفض</button>
+    </div>
+  </div>
+
+<script>
+(function(){
+  const DEFAULT_MEALS = [
+    {name_ar:"شوفان + موز", name_en:"Oatmeal + Banana", portion:"100 جم", cals:350, prot:8},
+    {name_ar:"سلطة دجاج مشوي", name_en:"Grilled Chicken Salad", portion:"200 جم", cals:420, prot:35},
+    {name_ar:"زبادي يوناني + توت", name_en:"Greek Yogurt + Berries", portion:"150 جم", cals:220, prot:12},
+    {name_ar:"شوربة عدس", name_en:"Lentil Soup", portion:"1 كوب", cals:300, prot:18}
+  ];
+  const DEFAULT_EX = [
+    {day:"monday", day_ar:"الاثنين", name:"Push-ups", name_ar:"تمارين ضغط", sets:"3x12"},
+    {day:"wednesday", day_ar:"الأربعاء", name:"Squats", name_ar:"تمارين قرفصاء", sets:"3x15"},
+    {day:"friday", day_ar:"الجمعة", name:"Plank", name_ar:"بلانك", sets:"3x60s"}
+  ];
+
+  // State
+  let meals = [], exercises = [], profile = {name:"", weight:"", height:"", goal:""};
+  let lang = localStorage.getItem('fs_lang') || 'ar';
+
+  // Elements
+  const els = {
+    mealsTable: document.querySelector('#mealsTable tbody'),
+    exTable: document.querySelector('#exTable tbody'),
+    addMealBtn: document.getElementById('addMealBtn'),
+    addExBtn: document.getElementById('addExBtn'),
+    mealName: document.getElementById('mealName'),
+    mealPortion: document.getElementById('mealPortion'),
+    mealCals: document.getElementById('mealCals'),
+    mealProt: document.getElementById('mealProt'),
+    exDay: document.getElementById('exDay'),
+    exName: document.getElementById('exName'),
+    exSets: document.getElementById('exSets'),
+    sumCals: document.getElementById('sumCals'),
+    sumProt: document.getElementById('sumProt'),
+    sumEx: document.getElementById('sumEx'),
+    exportDataBtn: document.getElementById('exportDataBtn'),
+    loadBtn: document.getElementById('loadBtn'),
+    clearBtn: document.getElementById('clearBtn'),
+    copySummaryBtn: document.getElementById('copySummaryBtn'),
+    btnAr: document.getElementById('btnAr'),
+    btnEn: document.getElementById('btnEn'),
+    devName: document.getElementById('devName'),
+    profileInfo: document.getElementById('profileInfo'),
+    editProfileBtn: document.getElementById('editProfileBtn'),
+    cookieBanner: document.getElementById('cookieBanner'),
+    cookieOk: document.getElementById('cookieOk'),
+    cookieClose: document.getElementById('cookieClose')
+  };
+
+  function saveAll(){
+    localStorage.setItem('fs_meals', JSON.stringify(meals));
+    localStorage.setItem('fs_ex', JSON.stringify(exercises));
+    localStorage.setItem('fs_profile', JSON.stringify(profile));
+    localStorage.setItem('fs_lang', lang);
+    refreshSummary();
+  }
+
+  function loadAll(){
+    meals = JSON.parse(localStorage.getItem('fs_meals') || 'null') || DEFAULT_MEALS.slice();
+    exercises = JSON.parse(localStorage.getItem('fs_ex') || 'null') || DEFAULT_EX.slice();
+    profile = JSON.parse(localStorage.getItem('fs_profile') || 'null') || profile;
+    lang = localStorage.getItem('fs_lang') || lang;
+    renderMeals(); renderEx(); renderProfile(); applyLang();
+    // show cookie banner if not accepted
+    if(!localStorage.getItem('fs_cookie')) els.cookieBanner.style.display = 'flex';
+  }
+
+  function renderMeals(){
+    els.mealsTable.innerHTML='';
+    meals.forEach((m,i)=>{
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${lang==='ar'?m.name_ar:(m.name_en||m.name_ar)}</td><td>${m.portion||''}</td><td>${m.cals||0}</td><td>${m.prot||0}</td>
+        <td><button class="btn btn-ghost" data-i="${i}" data-action="delMeal">حذف</button></td>`;
+      els.mealsTable.appendChild(tr);
+    });
+    attachMealHandlers();
+    refreshSummary();
+  }
+
+  function renderEx(){
+    els.exTable.innerHTML='';
+    exercises.forEach((e,i)=>{
+      const tr = document.createElement('tr');
+      const dayLabel = (lang==='ar' ? (e.day_ar || e.day) : e.day);
+      tr.innerHTML = `<td>${dayLabel}</td><td>${lang==='ar'? (e.name_ar||e.name) : e.name}</td><td>${e.sets||''}</td>
+        <td><button class="btn btn-ghost" data-i="${i}" data-action="delEx">حذف</button></td>`;
+      els.exTable.appendChild(tr);
+    });
+    attachExHandlers();
+    refreshSummary();
+  }
+
+  function attachMealHandlers(){
+    document.querySelectorAll('[data-action="delMeal"]').forEach(btn=>{
+      btn.onclick = ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        meals.splice(i,1); saveAll(); renderMeals();
+      };
+    });
+  }
+  function attachExHandlers(){
+    document.querySelectorAll('[data-action="delEx"]').forEach(btn=>{
+      btn.onclick = ()=>{
+        const i = parseInt(btn.getAttribute('data-i'));
+        exercises.splice(i,1); saveAll(); renderEx();
+      };
+    });
+  }
+
+  els.addMealBtn.addEventListener('click', ()=>{
+    const name = els.mealName.value.trim(), portion = els.mealPortion.value.trim();
+    const cals = parseInt(els.mealCals.value||0), prot = parseInt(els.mealProt.value||0);
+    if(!name){ alert(lang==='ar'?'اكتب اسم الوجبة':'Provide meal name'); return; }
+    meals.unshift({name_ar:name, name_en:name, portion, cals, prot});
+    els.mealName.value=''; els.mealPortion.value=''; els.mealCals.value=''; els.mealProt.value='';
+    saveAll(); renderMeals();
+  });
+
+  els.addExBtn.addEventListener('click', ()=>{
+    const day = els.exDay.value, name = els.exName.value.trim(), sets = els.exSets.value.trim();
+    if(!name){ alert(lang==='ar'?'اكتب اسم التمرين':'Provide exercise name'); return; }
+    const day_ar = document.querySelector('#exDay option:checked').textContent;
+    exercises.unshift({day, day_ar, name, name_ar:name, sets});
+    els.exName.value=''; els.exSets.value='';
+    saveAll(); renderEx();
+  });
+
+  function refreshSummary(){
+    const totalCals = meals.reduce((s,m)=>s + (parseInt(m.cals||0)),0);
+    const totalProt = meals.reduce((s,m)=>s + (parseInt(m.prot||0)),0);
+    els.sumCals.textContent = totalCals;
+    els.sumProt.textContent = totalProt;
+    els.sumEx.textContent = exercises.length;
+  }
+
+  els.exportDataBtn.addEventListener('click', ()=>{
+    const data = {meals, exercises, profile};
+    const blob = new Blob([JSON.stringify(data, null,2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'FitSnackAI_data.json'; document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },1200);
+  });
+
+  els.loadBtn.addEventListener('click', ()=>{
+    loadAll();
+    alert(lang==='ar'?'تم التحميل':'Loaded');
+  });
+  els.clearBtn.addEventListener('click', ()=>{
+    if(confirm(lang==='ar'?'هل تريد مسح كل المحفوظات؟':'Clear all saved data?')){
+      localStorage.removeItem('fs_meals'); localStorage.removeItem('fs_ex'); localStorage.removeItem('fs_profile');
+      meals = []; exercises = []; profile={}; renderMeals(); renderEx(); renderProfile(); saveAll();
+    }
+  });
+
+  els.copySummaryBtn.addEventListener('click', ()=>{
+    const s = generateSummary();
+    navigator.clipboard ? navigator.clipboard.writeText(s) : prompt('Copy', s);
+    alert(lang==='ar'?'تم نسخ الملخص':'Summary copied');
+  });
+
+  function generateSummary(){
+    let s = (lang==='ar'?'FitSnack AI — ملخص\n':'FitSnack AI — Summary\n');
+    s += (lang==='ar'?'الوجبات:\n':'Meals:\n');
+    meals.forEach(m=> s += `- ${lang==='ar'?m.name_ar:m.name_en} | ${m.portion} | ${m.cals} kcal | ${m.prot}g protein\n`);
+    s += (lang==='ار'?'التمارين:\n':'Exercises:\n');
+    exercises.forEach(e=> s += `- ${lang==='ar'?e.name_ar:e.name} (${e.day_ar||e.day}) | ${e.sets}\n`);
+    return s;
+  }
+
+  // Profile edit
+  els.editProfileBtn.addEventListener('click', ()=>{
+    const n = prompt(lang==='ar'?'الاسم':'Name', profile.name||''); if(n===null) return;
+    const w = prompt(lang==='ar'?'الوزن (كجم)':'Weight (kg)', profile.weight||''); if(w===null) return;
+    const h = prompt(lang==='ar'?'الطول (سم)':'Height (cm)', profile.height||''); if(h===null) return;
+    const g = prompt(lang==='ar'?'الهدف (حفظ/خسارة/زيادة)':'Goal (maintain/lose/gain)', profile.goal||'');
+    profile = {name:n, weight:w, height:h, goal:g}; saveAll(); renderProfile();
+  });
+
+  function renderProfile(){
+    els.profileInfo.innerHTML = `الاسم: ${profile.name||'—'}<br>الوزن: ${profile.weight||'—'}<br>الطول: ${profile.height||'—'}<br>الهدف: ${profile.goal||'—'}`;
+  }
+
+  // Lang
+  function applyLang(){
+    document.documentElement.lang = (lang==='ar'?'ar':'en');
+    document.documentElement.dir = (lang==='ar'?'rtl':'ltr');
+    document.getElementById('title').textContent = (lang==='ar'?'FitSnack AI':'FitSnack AI');
+    document.getElementById('subtitle').textContent = (lang==='ar'?'جدول أكل صحي + جدول تمارين':'Healthy meals & daily workouts');
+    document.getElementById('mealsTitle').textContent = (lang==='ar'?'جدول الوجبات الصحية':'Meal plan');
+    document.getElementById('mealsNote').textContent = (lang==='ar'?'أضف، عدّل أو احذف أي وجبة — القيم مخزنة محليًا':'Add, edit or delete meals — saved locally');
+    document.getElementById('exTitle').textContent = (lang==='ar'?'جدول التمارين اليومي':'Daily exercises');
+    document.getElementById('exNote').textContent = (lang==='ar'?'أضف تمرين لكل يوم مع المجموعات والتكرارات':'Add exercise per day with sets/reps');
+    document.getElementById('summaryTitle').textContent = (lang==='ar'?'ملخص اليوم':'Today summary');
+    document.getElementById('summaryNote').textContent = (lang==='ار'?'حساب مجموع السعرات والبروتين وعدد التمارين المحفوظة':'Totals for calories, protein and saved exercises');
+    document.getElementById('profileTitle').textContent = (lang==='ار'?'الملف':'Profile');
+    document.getElementById('devName').textContent = 'AHMED MOHAMED';
+    // buttons
+    document.getElementById('addMealBtn').textContent = (lang==='ar'?'أضف وجبة':'Add meal');
+    document.getElementById('addExBtn').textContent = (lang==='ar'?'أضف تمرين':'Add exercise');
+    document.getElementById('exportDataBtn').textContent = (lang==='ar'?'تصدير JSON':'Export JSON');
+    document.getElementById('loadBtn').textContent = (lang==='ar'?'تحميل المحفوظ':'Load saved');
+    document.getElementById('clearBtn').textContent = (lang==='ار'?'مسح المحفوظ':'Clear saved');
+    document.getElementById('copySummaryBtn').textContent = (lang==='ar'?'نسخ الملخص':'Copy summary');
+    document.getElementById('editProfileBtn').textContent = (lang==='ar'?'تعديل الملف':'Edit profile');
+    document.getElementById('userTag').textContent = (lang==='ar'?'المبرمج: AHMED MOHAMED':'Developer: AHMED MOHAMED');
+  }
+
+  document.getElementById('btnAr').addEventListener('click', ()=>{ lang='ar'; saveAll(); applyLang(); renderMeals(); renderEx(); });
+  document.getElementById('btnEn').addEventListener('click', ()=>{ lang='en'; saveAll(); applyLang(); renderMeals(); renderEx(); });
+
+  // cookie handlers
+  els.cookieOk.addEventListener('click', ()=>{ localStorage.setItem('fs_cookie','1'); els.cookieBanner.style.display='none'; });
+  els.cookieClose.addEventListener('click', ()=>{ localStorage.setItem('fs_cookie','0'); els.cookieBanner.style.display='none'; });
+
+  // init load
+  loadAll();
+
+  // make table rows editable on double click (simple inline edit)
+  document.addEventListener('dblclick', (e)=>{
+    if(e.target && e.target.tagName === 'TD'){
+      const td = e.target;
+      const old = td.textContent;
+      const inp = document.createElement('input'); inp.value = old; inp.style.width='100%';
+      td.innerHTML=''; td.appendChild(inp); inp.focus();
+      inp.addEventListener('blur', ()=>{ td.textContent = inp.value; saveEditedTables(); });
+      inp.addEventListener('keydown', (ev)=>{ if(ev.key==='Enter'){ inp.blur(); } });
+    }
+  });
+
+  function saveEditedTables(){
+    // read tables back to arrays (simplified - only values)
+    const rows = Array.from(els.mealsTable.querySelectorAll('tr'));
+    meals = rows.map(r=>{
+      const cells = r.querySelectorAll('td');
+      return {name_ar:cells[0].textContent, portion:cells[1].textContent, cals:parseInt(cells[2].textContent||0), prot:parseInt(cells[3].textContent||0), name_en:cells[0].textContent};
+    });
+    const erows = Array.from(els.exTable.querySelectorAll('tr'));
+    exercises = erows.map(r=>{
+      const cells = r.querySelectorAll('td');
+      return {day_ar:cells[0].textContent, name_ar:cells[1].textContent, sets:cells[2].textContent, day:cells[0].textContent, name:cells[1].textContent};
+    });
+    saveAll();
+    renderMeals(); renderEx();
+  }
+
+  // copy-to-clipboard helper for file download link (for future edit flow)
+  window.getProjectHtml = ()=> document.documentElement.outerHTML;
+
+})();
+</script>
+</body>
+</html>
